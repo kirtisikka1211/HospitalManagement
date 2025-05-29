@@ -448,10 +448,10 @@
       
       <ul class="nav-menu">
         <li><a href="landing.html" class="nav-link">Home</a></li>
-        <li><a href="doctors.html" class="nav-link active">Doctors</a></li>
+        <li><a href="doctors.html" class="nav-link">Doctors</a></li>
         <li><a href="appointments.html" class="nav-link">Appointments</a></li>
-        <li><a href="#about" class="nav-link">About</a></li>
-        <li><a href="#contact" class="nav-link">Contact</a></li>
+          <li><a href="staff.html" class="nav-link active">Staff</a></li>
+      
       </ul>
     </div>
   </nav>
@@ -565,6 +565,34 @@
       </div>
     </div>
   </main>
+  <!-- Doctors Display Card -->
+<!-- Doctors Display Card -->
+<div style="
+  max-width: 600px;
+  margin: 20px auto;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  background-color: #e9f2ff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+">
+  <div style="padding:25px 30px; border-bottom:1px solid #007bff; background:#d0e7ff; color:#004085; display:flex; flex-direction:column; gap:5px;">
+    <div style="display:flex; align-items:center; gap:12px; font-weight:700; font-size:1.6rem;">
+      <i class="fas fa-user-md" style="font-size:2rem;"></i>
+      <h2 style="margin:0;">Doctors</h2>
+    </div>
+    <p style="font-size:1.1rem; opacity:0.85; margin:0;">View and manage all registered doctors</p>
+  </div>
+  <div id="doctorListContainer" style="padding:25px 30px; min-height:150px; color:#004085;">
+    <div style="display:flex; align-items:center; gap:15px; font-size:1.2rem; color:#007bff;">
+      <i class="fas fa-spinner fa-spin" style="font-size:1.7rem;"></i>
+      <p>Loading doctors...</p>
+    </div>
+  </div>
+</div>
+
+
+
 
   <!-- Footer -->
   <footer class="footer">
@@ -616,7 +644,63 @@
         doctorOutput.innerText = `Network Error: ${error.message}`;
       }
     }
+    async function loadAndDisplayDoctors() {
+  const container = document.getElementById("doctorListContainer");
+  if (!container) return console.error("Container element not found");
 
+  container.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; color:#007bff; font-size:1.1rem;">
+      <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;"></i>
+      <p>Loading doctors...</p>
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${baseURL}/doctors`);
+    if (!res.ok) throw new Error("Failed to fetch doctors");
+
+    let doctorsRaw = await res.json();
+    let doctors = doctorsRaw.map(item => typeof item === "string" ? JSON.parse(item) : item);
+
+    if (doctors.length === 0) {
+      container.innerHTML = "<p>No doctors found.</p>";
+      return;
+    }
+
+    let tableHTML = `
+      <table style="width:500px; margin: 15px auto; border-collapse: collapse; font-family: Arial, sans-serif;">
+        <thead>
+          <tr style="background-color: #c3e6cb; color: #155724;">
+            <th style="border: 1px solid #28a745; padding: 10px; text-align: left;">ID</th>
+            <th style="border: 1px solid #28a745; padding: 10px; text-align: left;">Name</th>
+            <th style="border: 1px solid #28a745; padding: 10px; text-align: left;">Specialty</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    doctors.forEach(doc => {
+      tableHTML += `
+        <tr style="border: 1px solid #28a745;">
+          <td style="border: 1px solid #28a745; padding: 10px;">${doc.id || "N/A"}</td>
+          <td style="border: 1px solid #28a745; padding: 10px;">${doc.name || "N/A"}</td>
+          <td style="border: 1px solid #28a745; padding: 10px;">${doc.specialty || "N/A"}</td>
+        </tr>
+      `;
+    });
+
+    tableHTML += "</tbody></table>";
+    container.innerHTML = tableHTML;
+
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">Error loading doctors: ${error.message}</p>`;
+  }
+}
+
+// Call this on page load or when needed
+document.addEventListener('DOMContentLoaded', () => {
+  loadAndDisplayDoctors();
+});
     async function getDoctor() {
       if (!docId.value) {
         doctorOutput.className = "output-content error";

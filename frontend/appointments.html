@@ -575,19 +575,16 @@
                 type="text"
               />
             </div>
-            
             <div class="form-group">
               <label for="aptDoctor">
                 <i class="fas fa-user-md"></i>
                 Doctor ID
               </label>
-              <input 
-                id="aptDoctor" 
-                class="form-input" 
-                placeholder="Enter assigned doctor ID" 
-                type="text"
-              />
+                 <select id="aptDoctor" class="form-input">
+  <option value="">Select a Doctor</option>
+</select>
             </div>
+         
             
             <div class="form-group">
               <label for="aptDate">
@@ -653,6 +650,105 @@
       </div>
     </div>
   </main>
+<!-- Appointment Display Card -->
+<div class="appointment-display-card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fas fa-calendar-check"></i>
+      <h2>Appointments</h2>
+    </div>
+    <p class="card-description">View and manage all scheduled appointments</p>
+  </div>
+  <div class="card-content" id="appointmentListContainer">
+    <div class="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading appointments...</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .appointment-display-card {
+    max-width: 700px;
+    margin: 20px auto;
+    border: 2px solid #28a745; /* Green border for appointments */
+    border-radius: 10px;
+    background-color: #f0fff4; /* Light green background */
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .appointment-display-card .card-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #28a745;
+    background-color: #d4edda; /* Pale green header */
+    color: #155724;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .appointment-display-card .card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  .appointment-display-card .card-title i {
+    font-size: 1.8rem;
+  }
+
+  .appointment-display-card .card-description {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin: 0;
+  }
+
+  .appointment-display-card .card-content {
+    padding: 20px 25px;
+    min-height: 150px;
+    color: #155724;
+  }
+
+  /* Loading spinner and text */
+  .appointment-display-card .loading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.1rem;
+    color: #28a745;
+  }
+
+  .appointment-display-card .loading i {
+    font-size: 1.5rem;
+  }
+
+  /* Table styles for appointment data if used */
+  .appointment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .appointment-table th, .appointment-table td {
+    border: 1px solid #28a745;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 1rem;
+  }
+
+  .appointment-table th {
+    background-color: #c3e6cb;
+    color: #155724;
+  }
+
+  .appointment-table tbody tr:hover {
+    background-color: #e2f0d9;
+  }
+</style>
+
 
   <!-- Footer -->
   <footer class="footer">
@@ -662,7 +758,7 @@
     </div>
   </footer>
 
-  <script>
+  <!-- <script>
     const baseURL = "http://localhost:8080";
 
     // === Utility Functions ===
@@ -686,13 +782,13 @@
       appointmentOutput.className = "output-content";
       appointmentOutput.innerText = "Form cleared. Ready to manage appointments.";
     }
-
+    
     // === Appointment Functions ===
     async function createAppointment() {
       const data = {
         id: aptId.value,
         patientId: aptPatient.value,
-        doctorId: aptDoctor.value,
+     
         date: aptDate.value,
         time: aptTime.value
       };
@@ -820,6 +916,267 @@
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('aptDate').setAttribute('min', today);
     });
-  </script>
+  </script> -->
+  <script>
+  const baseURL = "http://localhost:8080";
+    
+  // === Populate Doctor Dropdown ===
+  async function populateDoctorDropdown() {
+  try {
+    const res = await fetch(`${baseURL}/doctors`);
+    if (!res.ok) throw new Error("Failed to fetch doctors");
+
+    const doctorsRaw = await res.json();
+
+    // Parse each JSON string into an object
+    const doctors = doctorsRaw.map(docStr => JSON.parse(docStr));
+
+    console.log("Parsed doctors:", doctors); // Check parsed structure
+
+    const doctorSelect = document.getElementById("aptDoctor");
+    doctorSelect.innerHTML = `<option value="">Select a Doctor</option>`;
+
+    doctors.forEach(doctor => {
+      const option = document.createElement("option");
+      option.value = doctor.id;          // id property as string
+      option.text = doctor.name || "Unnamed Doctor";
+      doctorSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading doctors:", error);
+  }
+}
+
+    async function loadAndDisplayAppointments() {
+  const container = document.getElementById("appointmentListContainer");
+  container.innerHTML = `
+    <div class="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading appointments...</p>
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${baseURL}/appointments`);
+    if (!res.ok) throw new Error("Failed to fetch appointments");
+
+    // Assuming your API returns an array of JSON strings for each appointment
+    let appointmentsRaw = await res.json();
+
+    // Parse each appointment JSON string into object
+    let appointments = appointmentsRaw.map(item => {
+      if (typeof item === "string") {
+        return JSON.parse(item);
+      }
+      return item;
+    });
+
+    if (appointments.length === 0) {
+      container.innerHTML = "<p>No appointments found.</p>";
+      return;
+    }
+
+    // Build the table HTML
+    let tableHTML = `
+      <table class="appointment-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient ID</th>
+            <th>Doctor ID</th>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    appointments.forEach(apt => {
+      tableHTML += `
+        <tr>
+          <td>${apt.id || "N/A"}</td>
+          <td>${apt.patientId || "N/A"}</td>
+          <td>${apt.doctorId || "N/A"}</td>
+          <td>${apt.date || "N/A"}</td>
+          <td>${apt.time || "N/A"}</td>
+        </tr>
+      `;
+    });
+
+    tableHTML += "</tbody></table>";
+
+    container.innerHTML = tableHTML;
+
+  } catch (error) {
+    container.innerHTML = `<p style="color:red;">Error loading appointments: ${error.message}</p>`;
+  }
+}
+
+// Call this on page load to populate appointments list
+document.addEventListener('DOMContentLoaded', () => {
+  loadAndDisplayAppointments();
+  populateDoctorDropdown(); // your existing function
+});
+
+  // === Utility Functions ===
+  function setTodaysDate() {
+    const today = new Date();
+    aptDate.value = today.toISOString().split('T')[0];
+  }
+
+  function setTomorrowDate() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    aptDate.value = tomorrow.toISOString().split('T')[0];
+  }
+
+  function clearForm() {
+    aptId.value = '';
+    aptPatient.value = '';
+    aptDoctor.value = '';
+    aptDate.value = '';
+    aptTime.value = '';
+    appointmentOutput.className = "output-content";
+    appointmentOutput.innerText = "Form cleared. Ready to manage appointments.";
+  }
+
+  // === Appointment Functions ===
+  async function createAppointment() {
+    const data = {
+      id: aptId.value,
+      patientId: aptPatient.value,
+      doctorId: aptDoctor.value,
+      date: aptDate.value,
+      time: aptTime.value
+    };
+
+    if (!data.id || !data.patientId || !data.doctorId || !data.date || !data.time) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = "Error: Please fill in all required fields (ID, Patient ID, Doctor ID, Date, and Time)";
+      return;
+    }
+
+    appointmentOutput.className = "output-content";
+    appointmentOutput.innerText = "Booking appointment...";
+
+    try {
+      const res = await fetch(`${baseURL}/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const responseText = await res.text();
+      appointmentOutput.className = res.ok ? "output-content success" : "output-content error";
+      appointmentOutput.innerText = responseText;
+
+      // Clear form on success
+      if (res.ok) {
+        clearForm();
+      }
+    } catch (error) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = `Network Error: ${error.message}`;
+    }
+  }
+
+  async function getAppointment() {
+    if (!aptId.value) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = "Error: Please enter an Appointment ID to search";
+      return;
+    }
+
+    appointmentOutput.className = "output-content";
+    appointmentOutput.innerText = "Searching for appointment...";
+
+    try {
+      const res = await fetch(`${baseURL}/appointments/${aptId.value}`);
+      const responseText = await res.text();
+      appointmentOutput.className = res.ok ? "output-content success" : "output-content error";
+      appointmentOutput.innerText = responseText;
+    } catch (error) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = `Network Error: ${error.message}`;
+    }
+  }
+
+  async function updateAppointment() {
+    const data = {
+      id: aptId.value,
+      patientId: aptPatient.value,
+      doctorId: aptDoctor.value,
+      date: aptDate.value,
+      time: aptTime.value
+    };
+
+    if (!data.id || !data.patientId || !data.doctorId || !data.date || !data.time) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = "Error: Please fill in all required fields (ID, Patient ID, Doctor ID, Date, and Time)";
+      return;
+    }
+
+    appointmentOutput.className = "output-content";
+    appointmentOutput.innerText = "Updating appointment details...";
+
+    try {
+      const res = await fetch(`${baseURL}/appointments/${aptId.value}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const responseText = await res.text();
+      appointmentOutput.className = res.ok ? "output-content success" : "output-content error";
+      appointmentOutput.innerText = responseText;
+    } catch (error) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = `Network Error: ${error.message}`;
+    }
+  }
+
+  async function deleteAppointment() {
+    if (!aptId.value) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = "Error: Please enter an Appointment ID to cancel";
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to cancel appointment with ID: ${aptId.value}?`)) {
+      return;
+    }
+
+    appointmentOutput.className = "output-content";
+    appointmentOutput.innerText = "Cancelling appointment...";
+
+    try {
+      const res = await fetch(`${baseURL}/appointments/${aptId.value}`, {
+        method: "DELETE"
+      });
+
+      const responseText = await res.text();
+      appointmentOutput.className = res.ok ? "output-content success" : "output-content error";
+      appointmentOutput.innerText = responseText;
+
+      // Clear form on success
+      if (res.ok) {
+        clearForm();
+      }
+    } catch (error) {
+      appointmentOutput.className = "output-content error";
+      appointmentOutput.innerText = `Network Error: ${error.message}`;
+    }
+  }
+
+  // Set minimum date to today and populate doctor dropdown on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('aptDate').setAttribute('min', today);
+
+    // Populate doctor dropdown
+    populateDoctorDropdown();
+  });
+</script>
+
 </body>
 </html>
