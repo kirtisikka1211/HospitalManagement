@@ -23,7 +23,7 @@ import scala.util.{Failure, Success}
 final case class Doctor(id: String, name: String, specialty: String)
 final case class Appointment(id: String, patientId: String, doctorId: String, date: String, time: String)
 final case class Staff(id: String, name: String, role: String, department: String)
-final case class Pharmacy(id: String, patientId: String, doctorId: String, date: String, medication: String)
+final case class Pharmacy(id: String, patientId: String, doctorId: String, date: String, medication: String, time: String)
 
 
 object Main {
@@ -49,7 +49,7 @@ object Main {
       Document("id" -> s.id, "name" -> s.name, "role" -> s.role, "department" -> s.department)
 
     def docFromPharmacy(p: Pharmacy): Document = 
-      Document(  "id" -> p.id, "patientId" -> p.patientId, "doctorId" -> p.doctorId, "date" -> p.date, "medication" -> p.medication)
+      Document(  "id" -> p.id, "patientId" -> p.patientId, "doctorId" -> p.doctorId, "date" -> p.date, "medication" -> p.medication,"time" -> p.time)
 
 
     val corsSettings = CorsSettings.defaultSettings.withAllowedMethods(Seq(GET, POST, PUT, DELETE, OPTIONS))
