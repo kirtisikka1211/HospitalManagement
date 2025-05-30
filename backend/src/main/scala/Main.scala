@@ -11,6 +11,9 @@ import org.mongodb.scala.model._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import akka.http.scaladsl.model.HttpMethods._
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
@@ -20,6 +23,8 @@ import scala.util.{Failure, Success}
 final case class Doctor(id: String, name: String, specialty: String)
 final case class Appointment(id: String, patientId: String, doctorId: String, date: String, time: String)
 final case class Staff(id: String, name: String, role: String, department: String)
+final case class Pharmacy(id: String, patientId: String, doctorId: String, date: String, medication: String, time: String)
+
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -31,6 +36,8 @@ object Main {
     val doctorCollection: MongoCollection[Document] = database.getCollection("doctors")
     val appointmentCollection: MongoCollection[Document] = database.getCollection("appointments")
     val staffCollection: MongoCollection[Document] = database.getCollection("staff")
+    val pharmacyCollection: MongoCollection[Document] = database.getCollection("pharmacy")
+
 
     def docFromDoctor(d: Doctor): Document =
       Document("id" -> d.id, "name" -> d.name, "specialty" -> d.specialty)
@@ -41,118 +48,162 @@ object Main {
     def docFromStaff(s: Staff): Document =
       Document("id" -> s.id, "name" -> s.name, "role" -> s.role, "department" -> s.department)
 
+    def docFromPharmacy(p: Pharmacy): Document = 
+      Document(  "id" -> p.id, "patientId" -> p.patientId, "doctorId" -> p.doctorId, "date" -> p.date, "medication" -> p.medication,"time" -> p.time)
+
+
     val corsSettings = CorsSettings.defaultSettings.withAllowedMethods(Seq(GET, POST, PUT, DELETE, OPTIONS))
 
     val route =
-      cors(corsSettings) {
+  cors(corsSettings) {
+    concat(
+
+      // === Doctor CRUD ===
+      pathPrefix("doctors") {
         concat(
-          // === Doctor CRUD ===
-          pathPrefix("doctors") {
+          post {
+            entity(as[Doctor]) { doctor =>
+              doctorCollection.insertOne(docFromDoctor(doctor)).toFuture()
+              complete(StatusCodes.Created, s"Doctor ${doctor.name} added.")
+            }
+          },
+          path(Segment) { id =>
             concat(
-              post {
-                entity(as[Doctor]) { doctor =>
-                  doctorCollection.insertOne(docFromDoctor(doctor)).toFuture()
-                  complete(StatusCodes.Created, s"Doctor ${doctor.name} added.")
-                }
-              },
               get {
-                path(Segment) { id =>
-                  complete {
-                    doctorCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
-                  }
-                } ~
-                pathEndOrSingleSlash {
-                  complete {
-                    doctorCollection.find().toFuture().map(_.map(_.toJson()))
-                  }
+                complete {
+                  doctorCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
                 }
               },
               put {
-                path(Segment) { id =>
-                  entity(as[Doctor]) { updated =>
-                    doctorCollection.updateOne(equal("id", id), combine(
-                      set("name", updated.name),
-                      set("specialty", updated.specialty)
-                    )).toFuture()
-                    complete(StatusCodes.OK, s"Doctor $id updated.")
-                  }
+                entity(as[Doctor]) { updated =>
+                  doctorCollection.updateOne(equal("id", id), combine(
+                    set("name", updated.name),
+                    set("specialty", updated.specialty)
+                  )).toFuture()
+                  complete(StatusCodes.OK, s"Doctor $id updated.")
                 }
               },
               delete {
-                path(Segment) { id =>
-                  doctorCollection.deleteOne(equal("id", id)).toFuture()
-                  complete(StatusCodes.OK, s"Doctor $id deleted.")
+                doctorCollection.deleteOne(equal("id", id)).toFuture()
+                complete(StatusCodes.OK, s"Doctor $id deleted.")
+              }
+            )
+          },
+          pathEndOrSingleSlash {
+            get {
+              complete {
+                doctorCollection.find().toFuture().map(_.map(_.toJson()))
+              }
+            }
+          }
+        )
+      },
+
+      // === Appointment CRUD ===
+      pathPrefix("appointments") {
+        concat(
+          post {
+            entity(as[Appointment]) { appt =>
+              appointmentCollection.insertOne(docFromAppointment(appt)).toFuture()
+              complete(StatusCodes.Created, s"Appointment ${appt.id} booked.")
+            }
+          },
+          path(Segment) { id =>
+            concat(
+              get {
+                complete {
+                  appointmentCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
+                }
+              },
+              put {
+                entity(as[Appointment]) { updated =>
+                  appointmentCollection.updateOne(equal("id", id), combine(
+                    set("patientId", updated.patientId),
+                    set("doctorId", updated.doctorId),
+                    set("date", updated.date),
+                    set("time", updated.time)
+                  )).toFuture()
+                  complete(StatusCodes.OK, s"Appointment $id updated.")
+                }
+              },
+              delete {
+                appointmentCollection.deleteOne(equal("id", id)).toFuture()
+                complete(StatusCodes.OK, s"Appointment $id cancelled.")
+              }
+            )
+          },
+          pathEndOrSingleSlash {
+            get {
+              complete {
+                appointmentCollection.find().toFuture().map(_.map(_.toJson()))
+              }
+            }
+          }
+        )
+      },
+
+      // === Pharmacy CRUD ===
+      pathPrefix("pharmacy") {
+        concat(
+          post {
+            entity(as[Pharmacy]) { record =>
+              pharmacyCollection.insertOne(docFromPharmacy(record)).toFuture()
+              complete(StatusCodes.Created, s"Prescription ${record.id} recorded.")
+            }
+          },
+          path(Segment) { id =>
+            concat(
+              get {
+                complete {
+                  pharmacyCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
+                }
+              },
+              put {
+                entity(as[Pharmacy]) { updated =>
+                  pharmacyCollection.updateOne(equal("id", id), combine(
+                    set("patientId", updated.patientId),
+                    set("doctorId", updated.doctorId),
+                    set("date", updated.date),
+                    set("medication", updated.medication)
+                  )).toFuture()
+                  complete(StatusCodes.OK, s"Prescription $id updated.")
+                }
+              },
+              delete {
+                complete {
+                  pharmacyCollection.deleteOne(equal("id", id)).toFuture()
+                    .map(_ => StatusCodes.OK -> s"Prescription $id deleted.")
                 }
               }
             )
           },
-
-          // === Appointment CRUD ===
-          pathPrefix("appointments") {
-            concat(
-              post {
-                entity(as[Appointment]) { appt =>
-                  appointmentCollection.insertOne(docFromAppointment(appt)).toFuture()
-                  complete(StatusCodes.Created, s"Appointment ${appt.id} booked.")
-                }
-              },
-              get {
-                path(Segment) { id =>
-                  complete {
-                    appointmentCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
-                  }
-                } ~
-                pathEndOrSingleSlash {
-                  complete {
-                    appointmentCollection.find().toFuture().map(_.map(_.toJson()))
-                  }
-                }
-              },
-              put {
-                path(Segment) { id =>
-                  entity(as[Appointment]) { updated =>
-                    appointmentCollection.updateOne(equal("id", id), combine(
-                      set("patientId", updated.patientId),
-                      set("doctorId", updated.doctorId),
-                      set("date", updated.date),
-                      set("time", updated.time)
-                    )).toFuture()
-                    complete(StatusCodes.OK, s"Appointment $id updated.")
-                  }
-                }
-              },
-              delete {
-                path(Segment) { id =>
-                  appointmentCollection.deleteOne(equal("id", id)).toFuture()
-                  complete(StatusCodes.OK, s"Appointment $id cancelled.")
-                }
+          pathEndOrSingleSlash {
+            get {
+              complete {
+                pharmacyCollection.find().toFuture().map(_.map(_.toJson()))
               }
-            )
-          },
+            }
+          }
+        )
+      },
 
-          // === Staff CRUD ===
-          pathPrefix("staff") {
+      // === Staff CRUD ===
+      pathPrefix("staff") {
+        concat(
+          post {
+            entity(as[Staff]) { staff =>
+              staffCollection.insertOne(docFromStaff(staff)).toFuture()
+              complete(StatusCodes.Created, s"Staff ${staff.name} added.")
+            }
+          },
+          path(Segment) { id =>
             concat(
-              post {
-                entity(as[Staff]) { staff =>
-                  staffCollection.insertOne(docFromStaff(staff)).toFuture()
-                  complete(StatusCodes.Created, s"Staff ${staff.name} added.")
-                }
-              },
               get {
-                path(Segment) { id =>
-                  complete {
-                    staffCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
-                  }
-                } ~
-                pathEndOrSingleSlash {
-                  complete {
-                    staffCollection.find().toFuture().map(_.map(_.toJson()))
-                  }
+                complete {
+                  staffCollection.find(equal("id", id)).first().toFuture().map(_.toJson())
                 }
               },
               put {
-              path(Segment) { id =>
                 entity(as[Staff]) { updated =>
                   val updateStaff = staffCollection.updateOne(equal("id", id), combine(
                     set("name", updated.name),
@@ -164,7 +215,7 @@ object Main {
                     if (updated.department.toLowerCase == "doctor") {
                       doctorCollection.updateOne(equal("id", id), combine(
                         set("name", updated.name),
-                        set("specialty", "Updated by staff update") // Adjust logic or extract from Staff if available
+                        set("specialty", "Updated by staff update")
                       )).toFuture()
                     } else {
                       Future.successful(())
@@ -177,19 +228,28 @@ object Main {
                     complete(StatusCodes.OK, s"Staff $id updated.")
                   }
                 }
-              }
-            }
-
+              },
               delete {
-                path(Segment) { id =>
-                  staffCollection.deleteOne(equal("id", id)).toFuture()
-                  complete(StatusCodes.OK, s"Staff $id deleted.")
-                }
+                staffCollection.deleteOne(equal("id", id)).toFuture()
+                complete(StatusCodes.OK, s"Staff $id deleted.")
               }
             )
+          },
+          pathEndOrSingleSlash {
+            get {
+              complete {
+                staffCollection.find().toFuture().map(_.map(_.toJson()))
+              }
+            }
           }
         )
       }
+
+    )
+  }
+
+
+            
 
     val bindingFuture = Http().newServerAt("localhost", 8080).bind(route)
     println("Hospital Management System online at http://localhost:8080/")
