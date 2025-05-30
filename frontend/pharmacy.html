@@ -497,6 +497,7 @@
         <li><a href="appointments.html" class="nav-link ">Appointments</a></li>
         <li><a href="pharmacy.html" class="nav-link active">Pharmacy</a></li>
         <li><a href="staff.html" class="nav-link ">Staff</a></li>
+             <li><a href="query.html" class="nav-link ">Query</a></li>
       </ul>
     </div>
   </nav>
@@ -616,7 +617,7 @@
         <div class="button-grid">
           <button onclick="createAppointment()" class="btn btn-primary">
             <i class="fas fa-prescription-bottle"></i>
-            Dispense Medication
+            Add Medication
           </button>
           <button onclick="getAppointment()" class="btn btn-secondary">
             <i class="fas fa-search"></i>
@@ -823,6 +824,7 @@
             <th>Doctor ID</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Medicine</th>
           </tr>
         </thead>
         <tbody>
@@ -836,6 +838,7 @@
           <td>${apt.doctorId || "N/A"}</td>
           <td>${apt.date || "N/A"}</td>
           <td>${apt.time || "N/A"}</td>
+          <td>${apt.medication || "N/A"}</td>
         </tr>
       `;
     });
@@ -945,7 +948,8 @@ document.addEventListener('DOMContentLoaded', () => {
       patientId: aptPatient.value,
       doctorId: aptDoctor.value,
       date: aptDate.value,
-      time: aptTime.value
+      time: aptTime.value,
+      medication: document.getElementById('aptMedication').value.trim()
     };
 
     if (!data.id || !data.patientId || !data.doctorId || !data.date || !data.time) {
