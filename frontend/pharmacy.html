@@ -616,7 +616,7 @@
         <div class="button-grid">
           <button onclick="createAppointment()" class="btn btn-primary">
             <i class="fas fa-prescription-bottle"></i>
-            Dispense Medication
+            Add Medication
           </button>
           <button onclick="getAppointment()" class="btn btn-secondary">
             <i class="fas fa-search"></i>
@@ -945,7 +945,8 @@ document.addEventListener('DOMContentLoaded', () => {
       patientId: aptPatient.value,
       doctorId: aptDoctor.value,
       date: aptDate.value,
-      time: aptTime.value
+      time: aptTime.value,
+      medication: document.getElementById('aptMedication').value.trim()
     };
 
     if (!data.id || !data.patientId || !data.doctorId || !data.date || !data.time) {
