@@ -10,7 +10,7 @@ import com.hospital.DoctorRoutes
 import com.hospital.PharmacyRoutes
 import com.hospital.AppointmentRoutes
 import com.hospital.StaffRoutes
-
+import  com.hospital.UserRoutes
 
 object Routes {
   val corsSettings = CorsSettings.defaultSettings.withAllowedMethods(Seq(GET, POST, PUT, DELETE, OPTIONS))
@@ -20,7 +20,9 @@ object Routes {
       DoctorRoutes.route,
       AppointmentRoutes.route,
       PharmacyRoutes.route,
-      StaffRoutes.route
+      StaffRoutes.route,
+      UserRoutes.route,
+      PatientRoutes.route
     )
   }
 }

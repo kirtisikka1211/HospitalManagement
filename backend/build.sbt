@@ -1,4 +1,4 @@
-name := "LeaveManagementSystem"
+name := "HospitalManagementSystem"
 
 version := "0.1"
 

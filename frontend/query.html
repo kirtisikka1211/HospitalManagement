@@ -77,6 +77,38 @@
       font-weight: 700;
       font-size: 1.25rem;
     }
+    .feature-content {
+      padding: 1.5rem;
+    }
+
+    .feature-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .feature-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .logout-btn {
+      background: var(--danger);
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
 
     .nav-logo i {
       color: var(--primary);
@@ -784,6 +816,11 @@
         <li><a href="pharmacy.html" class="nav-link ">Pharmacy</a></li>
         <li><a href="staff.html" class="nav-link ">Staff</a></li>
            <li><a href="query.html" class="nav-link active">Query</a></li>
+           <div class="feature-content">
+            <button class="feature-btn logout-btn" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </button>
       </ul>
     </div>
   </nav>
@@ -1069,6 +1106,7 @@
 
     async function fetchStaffMember(id) {
       return await apiRequest(`/staff/${id}`);
+      console.log(`[DEBUG] Raw data for ${entityType}:`, data);
     }
 
     async function fetchPharmacyRecords() {
@@ -1078,6 +1116,7 @@
     async function fetchPharmacyRecord(id) {
       return await apiRequest(`/pharmacy/${id}`);
     }
+    
 
     // Error handling function
     function showError(entityType, message) {
@@ -1643,6 +1682,12 @@
     document.addEventListener('DOMContentLoaded', () => {
       console.log('Hospital Management Query Interface loaded successfully');
     });
+        function logout() {
+  
+  // Redirect to login page
+  window.location.href = 'login.html';
+}
+
   </script>
 </body>
 </html>

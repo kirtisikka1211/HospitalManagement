@@ -11,4 +11,6 @@ object MongoCollections {
   val appointmentCollection: MongoCollection[Document] = database.getCollection("appointments")
   val staffCollection: MongoCollection[Document] = database.getCollection("staff")
   val pharmacyCollection: MongoCollection[Document] = database.getCollection("pharmacy")
+  val userCollection: MongoCollection[Document] = database.getCollection("users")
+  val patientCollection: MongoCollection[Document] = database.getCollection("patients")
 }

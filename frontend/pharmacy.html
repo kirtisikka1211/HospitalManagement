@@ -67,7 +67,38 @@
       align-items: center;
       height: 4rem;
     }
+    .feature-content {
+      padding: 1.5rem;
+    }
 
+    .feature-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .feature-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .logout-btn {
+      background: var(--danger);
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+    }
     .nav-logo {
       display: flex;
       align-items: center;
@@ -498,6 +529,11 @@
         <li><a href="pharmacy.html" class="nav-link active">Pharmacy</a></li>
         <li><a href="staff.html" class="nav-link ">Staff</a></li>
              <li><a href="query.html" class="nav-link ">Query</a></li>
+             <div class="feature-content">
+            <button class="feature-btn logout-btn" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </button>
       </ul>
     </div>
   </nav>
@@ -1018,6 +1054,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate doctor dropdown
     populateDoctorDropdown();
   });
+      function logout() {
+  
+  // Redirect to login page
+  window.location.href = 'login.html';
+}
+
 </script>
 
 </body>

@@ -1,88 +1,13 @@
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/AppointmentRoutes.scala:30:88: Cannot find an implicit ExecutionContext. You might add[0m
-[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
-[0m[[0m[31merror[0m] [0m[0mthread pools asynchronous tasks (such as Futures) will run,[0m
-[0m[[0m[31merror[0m] [0m[0mso the specific ExecutionContext that is selected is important.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
-[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
-[0m[[0m[31merror[0m] [0m[0mthe following:[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mimplicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global[0m
-[0m[[0m[31merror[0m] [0m[0m            complete(appointmentCollection.find(equal("id", id)).first().toFuture().map(_.toJson()))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                                       ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/AppointmentRoutes.scala:51:63: Cannot find an implicit ExecutionContext. You might add[0m
-[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
-[0m[[0m[31merror[0m] [0m[0mthread pools asynchronous tasks (such as Futures) will run,[0m
-[0m[[0m[31merror[0m] [0m[0mso the specific ExecutionContext that is selected is important.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
-[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
-[0m[[0m[31merror[0m] [0m[0mthe following:[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mimplicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global[0m
-[0m[[0m[31merror[0m] [0m[0m          complete(appointmentCollection.find().toFuture().map(_.map(_.toJson())))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/PharmacyRoutes.scala:30:85: Cannot find an implicit ExecutionContext. You might add[0m
-[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
-[0m[[0m[31merror[0m] [0m[0mthread pools asynchronous tasks (such as Futures) will run,[0m
-[0m[[0m[31merror[0m] [0m[0mso the specific ExecutionContext that is selected is important.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
-[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
-[0m[[0m[31merror[0m] [0m[0mthe following:[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mimplicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global[0m
-[0m[[0m[31merror[0m] [0m[0m            complete(pharmacyCollection.find(equal("id", id)).first().toFuture().map(_.toJson()))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                                    ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/PharmacyRoutes.scala:52:60: Cannot find an implicit ExecutionContext. You might add[0m
-[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
-[0m[[0m[31merror[0m] [0m[0mthread pools asynchronous tasks (such as Futures) will run,[0m
-[0m[[0m[31merror[0m] [0m[0mso the specific ExecutionContext that is selected is important.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
-[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
-[0m[[0m[31merror[0m] [0m[0mthe following:[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mimplicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global[0m
-[0m[[0m[31merror[0m] [0m[0m          complete(pharmacyCollection.find().toFuture().map(_.map(_.toJson())))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                           ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/StaffRoutes.scala:30:82: Cannot find an implicit ExecutionContext. You might add[0m
-[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
-[0m[[0m[31merror[0m] [0m[0mthread pools asynchronous tasks (such as Futures) will run,[0m
-[0m[[0m[31merror[0m] [0m[0mso the specific ExecutionContext that is selected is important.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
-[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
-[0m[[0m[31merror[0m] [0m[0mthe following:[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mimplicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global[0m
-[0m[[0m[31merror[0m] [0m[0m            complete(staffCollection.find(equal("id", id)).first().toFuture().map(_.toJson()))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                                 ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/StaffRoutes.scala:50:57: Cannot find an implicit ExecutionContext. You might add[0m
-[0m[[0m[31merror[0m] [0m[0man (implicit ec: ExecutionContext) parameter to your method.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mThe ExecutionContext is used to configure how and on which[0m
-[0m[[0m[31merror[0m] [0m[0mthread pools asynchronous tasks (such as Futures) will run,[0m
-[0m[[0m[31merror[0m] [0m[0mso the specific ExecutionContext that is selected is important.[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mIf your application does not define an ExecutionContext elsewhere,[0m
-[0m[[0m[31merror[0m] [0m[0mconsider using Scala's global ExecutionContext by defining[0m
-[0m[[0m[31merror[0m] [0m[0mthe following:[0m
-[0m[[0m[31merror[0m] [0m[0m[0m
-[0m[[0m[31merror[0m] [0m[0mimplicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global[0m
-[0m[[0m[31merror[0m] [0m[0m          complete(staffCollection.find().toFuture().map(_.map(_.toJson())))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                        ^[0m
-[0m[[0m[31merror[0m] [0m[0m/home/akshaya/Documents/Sem6Labsheets/BDA/HospitalManagement/backend/src/main/scala/com/hospital/Routes.scala:15:7: not found: value DoctorRoutes[0m
-[0m[[0m[31merror[0m] [0m[0m      DoctorRoutes.route,[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
-[0m[[0m[31merror[0m] [0m[0m7 errors found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/kirtisikka/Downloads/leave-management-system/backend/src/main/scala/com/hospital/UserRoutes.scala:32:13: not found: value userCollection[0m
+[0m[[0m[31merror[0m] [0m[0m            userCollection.insertOne(docFromUser(user)).toFuture()[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/kirtisikka/Downloads/leave-management-system/backend/src/main/scala/com/hospital/UserRoutes.scala:40:29: not found: value userCollection[0m
+[0m[[0m[31merror[0m] [0m[0m            val foundUser = userCollection.find(equal("username", login.username)).first().toFuture()[0m
+[0m[[0m[31merror[0m] [0m[0m                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/kirtisikka/Downloads/leave-management-system/backend/src/main/scala/com/hospital/UserRoutes.scala:41:34: akka.http.scaladsl.server.Directive[foundUser.Out] does not take parameters[0m
+[0m[[0m[31merror[0m] [0m[0m            onSuccess(foundUser) {[0m
+[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/kirtisikka/Downloads/leave-management-system/backend/src/main/scala/com/hospital/UserRoutes.scala:58:13: not found: value userCollection[0m
+[0m[[0m[31merror[0m] [0m[0m            userCollection.find().toFuture().map(_.map(_.toJson()))[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0mfour errors found[0m
